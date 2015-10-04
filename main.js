@@ -1,168 +1,206 @@
-var loadingCounter = 0;
-$(".slider img").fadeTo(0, 0);
-
-
-
-
 
 $(document).ready(function(){
-
-
-	start();
-	
+	$(".canSlider").canSlider();
 });
 
 
-$('.slider img').each(function(){
-				$(this).attr('onload','imagesLoaded(this)');					
-});
-var imagesIndex = [];
 
+(function($) {
+  "use strict";
+ $.fn.canSlider = function(options) {
+	 
+		var i;
+		var imagesIndex = [];
+		var loadingCounter = 0;
+		var parentim=this;
+		var listEnd = 0;
+		
+		var options = $.extend({
+            directions:['center-top','left-top','right-top','center-middle','center-top','center-bottom'],
+			effectTime:2000,
+			zaman:5,
+			imageLine:"order",
+			safeLoop:10,
+            backgroundColor: "white"
+        }, options );
 
+		options.milisaniye = options.milisaniye*1000; 
 
-
-function start(){
-	listEnd = $('.slider img').size();
-	for(i=0;i<listEnd;i++){
-		imagesIndex[i] = true;
-	}
-	imagesLoadTest();
-}
-function imagesLoadTest(){
-	var imageLoadingLoop = setInterval(function(){
-		$.each(imagesIndex,function(i){
-			if(!imagesIndex[i]){
-				return;
-			}
-			$('title').html(i)
-			status = $('.slider img').get(i).complete;
-			if($('.slider img').get(i).complete){
-				loadingCounter = loadingCounter + 1;
-				imagesIndex[i] = false;
-			}
-			if(loadingCounter == $('.slider img').size()){
-				// alert("tüm resimler yüklendi");
-				$('.slider img').each(function(){
-					$(this).attr("width",($('.slider').width()/100*110));					
-				});
-				timeout = setInterval(bganimation,milisaniye);
-				bganimation();
-			}
-			
-		});
-	}, 100);
-}
+		
+		
+		
  
-					
-
-					var timeout;
-					var effectTimeMS = 100;
-					var milisaniye = 0.25*1000;
-					
-					
-
-			var artim = 0;
-			var yonelim = 1;
-			var genFark,yukFark;
 			var oldImg = 0;
 			var ranimg = 0;
+			var artim = 0;
+			var genFark,yukFark,i,tmpx,yuk1,yuk2,yukFarkReal,genFarkReal,nextDirection,yon,yonY,milisaniyeForCSS;
 			
-			function bganimation(){
-				clearInterval(timeout);
-				do {
-					ranimg = Math.floor((Math.random() * $('.slider img').size()));
-				} while (ranimg == oldImg);
-				oldImg = ranimg;
+			this.bganimation = function(){
+				
+
+				// $('title').html(artim%directions.length)
+				
+				
+				
+				// IMAGE LINE
+				if(options.imageLine == "order"){
+					ranimg =  Math.ceil(artim%$(parentim).size());
+					oldImg = ranimg;					
+				}else{
+					do {
+						ranimg = Math.floor((Math.random() * $(parentim).size()));
+					} while (ranimg == oldImg);
+					oldImg = ranimg;
+				}
 					
+				tmpx = 0;
+				do {
+					tmpx++;
+					yuk1 = Math.abs($(parentim).find("img").eq(ranimg).height());
+					yuk2 = Math.abs($(parentim).height());
+					yukFarkReal =Math.abs((yuk1-yuk2));
+				} while (yuk1 < 100 || yuk2 < 100 & tmpx < options.safeLoop);
 					
-				
+				$('title').html(yuk2);
+				tmpx = 0;
 				do {
-						yuk1 = $('.slider img:eq('+ranimg+')').height();
-						yuk2 = $('.slider').height();
-					 yukFarkReal =Math.abs((yuk1-yuk2));
-				} while (yuk1 < 100 || yuk2 < 100);
-								
-				do {
-						yuk1 = Math.abs($('.slider img:eq('+ranimg+')').width());
-						yuk2 = Math.abs($('.slider').width());
-					 genFarkReal =Math.abs((yuk1-yuk2));
-				} while (yuk1 < 100 || yuk2 < 100);
+					tmpx++;
+					yuk1 = Math.abs($(parentim).find("img").eq(ranimg).width());
+					yuk2 = Math.abs($(parentim).width());
+					genFarkReal =Math.abs((yuk1-yuk2));
+				} while (yuk1 < 100 || yuk2 < 100 & tmpx < options.safeLoop);
 				
 				
-				if(artim > 4){
-					artim = 0;
-					genFark = genFarkReal;
-					yukFark = yukFarkReal;
-				}else{				
-						if(artim == 4){
-							artim++;
-							genFark = 1;
-							yukFark = 1;
-						}
-						
-							if(artim == 3){
-							artim++;
-							genFark = 10;
-							yukFark = yukFarkReal;
-						}
-														
-						
-										
-						if(artim == 2){
-							artim++;
-							genFark = genFarkReal;
-							yukFark = yukFarkReal;
-						}
-								
-								
-									
-						if(artim == 1){
-							artim++;
-							genFark = genFarkReal/2;
-							yukFark = yukFarkReal/3;
-						}
-								
-						if(artim == 0){
-							artim++;
-							genFark = genFarkReal;
-							yukFark = yukFarkReal;
-						}
+				
+				
+				
+				nextDirection = options.directions[artim%options.directions.length];
+				
+				switch(nextDirection){
+					case 'left-top':
+						genFark = 1;
+						yukFark = 1;
+						break;
+					case 'left-middle':
+						genFark = 1;
+						yukFark = yukFarkReal/2;
+						break;	
+					case 'left-bottom':
+						genFark = 1;
+						yukFark = yukFarkReal;
+						break;
+					case 'right-top':
+						genFark = genFarkReal;
+						yukFark = 1;
+						break;
+					case 'right-middle':
+						genFark = genFarkReal;
+						yukFark = yukFarkReal/2;
+						break;	
+					case 'right-bottom':
+						genFark = genFarkReal;
+						yukFark = yukFarkReal;
+						break;
+					case 'center-top':
+						genFark = genFarkReal/2;
+						yukFark = 1;
+						break;
+					case 'center-middle':
+						genFark = genFarkReal/2;
+						yukFark = yukFarkReal/2;
+						break;	
+					case 'center-bottom':
+						genFark = genFarkReal/2;
+						yukFark = yukFarkReal;
+						break;						
+					default:
+						genFark = genFarkReal/2;
+						yukFark = yukFarkReal/2;				
+						break;
+
 				}	
-			
 							
 					
 					yon = "-"+Math.abs(Math.ceil(genFark)).toString()+'px';
 					yonY = "-"+Math.abs(Math.ceil(yukFark)).toString()+'px';
 
 					
-					milisaniyeForCSS = (milisaniye+0) +"ms";
+					milisaniyeForCSS = (options.milisaniye+0) +"ms";
 					
-					$(".slider img").css('-webkit-transition','-webkit-transform '+milisaniyeForCSS+' linear');
-					$(".slider img").css('-moz-transition','-moz-transform '+milisaniyeForCSS+' linear');
-					$(".slider img").css('-ms-transition','-ms-transform '+milisaniyeForCSS+' linear');
-					$(".slider img").css('-o-transition','-o-transform '+milisaniyeForCSS+' linear');
-					$(".slider img").css('transition','transform '+milisaniyeForCSS+' linear');
+					$(parentim).find("img").css('-webkit-transition','-webkit-transform '+milisaniyeForCSS+' linear');
+					$(parentim).find("img").css('-moz-transition','-moz-transform '+milisaniyeForCSS+' linear');
+					$(parentim).find("img").css('-ms-transition','-ms-transform '+milisaniyeForCSS+' linear');
+					$(parentim).find("img").css('-o-transition','-o-transform '+milisaniyeForCSS+' linear');
+					$(parentim).find("img").css('transition','transform '+milisaniyeForCSS+' linear');
 	
 					
-					$(".slider img").css('-webkit-transform','translate('+yon+','+yonY+')');
-					$(".slider img").css('-moz-transform','translate('+yon+','+yonY+') rotate(0.12deg);');
-					$(".slider img").css('-ms-transform','translate('+yon+','+yonY+')');
-					$(".slider img").css('-o-transform','translate('+yon+','+yonY+')');
-					$(".slider img").css('transform','translate('+yon+','+yonY+')');
+					$(parentim).find("img").css('-webkit-transform','translate('+yon+','+yonY+')');
+					$(parentim).find("img").css('-moz-transform','translate('+yon+','+yonY+') rotate(0.12deg);');
+					$(parentim).find("img").css('-ms-transform','translate('+yon+','+yonY+')');
+					$(parentim).find("img").css('-o-transform','translate('+yon+','+yonY+')');
+					$(parentim).find("img").css('transform','translate('+yon+','+yonY+')');
 					
 					
-					$('.slider img:eq('+ranimg+')').fadeTo(effectTimeMS, 1);
-					$(".slider img").not('.slider img:eq('+ranimg+')').fadeTo(effectTimeMS, 0);
+					$(parentim).find("img").eq(ranimg).fadeTo(options.effectTime, 1);
+					$(parentim).find("img").not(ranimg).fadeTo(options.effectTime, 0);
 					
-					timeout = setInterval(bganimation,milisaniye);
+					artim++;
 				}
+				
+				
+				
+				
+	parentim.css('width','100%').css('height','420px').css('overflow','hidden').css('position','relative');
+	parentim.find('img').css('position','absolute').css('top','0px').css('left','0px');
+				
+	
+	$(parentim).find("img").fadeTo(0, 0);
+	listEnd = $(parentim).find("img").length;
+	// $('title').html(listEnd);
+	for(i=0;i<listEnd;i++){
+		imagesIndex[i] = true;
+	}
+	// $('title').html(imagesIndex);
+	
+	var imageLoadingLoop = setInterval(function(){
+		$.each(imagesIndex,function(i){
+			if(!imagesIndex[i]){
+				return;
+			}
+			
+			if($(parentim).find("img").get(i).complete){
+				loadingCounter = loadingCounter + 1;
+				imagesIndex[i] = false;
+			}
+			
+			
+		});
+		if(loadingCounter == $(parentim).find('img').size()){
+				// alert("tüm resimler yüklendi");
+				/*$(parentim).each(function(){
+					$(this).attr("width",($(this).width()/100*110));					
+				});*/
+				// $.fn.canSlider.bganimation();
+				parentim.bganimation();
+		}
+	}, 100);
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			}	
+					
+})(jQuery);
 					
 					
 					
 					
-					
-					
-					
+
 				
 
 
