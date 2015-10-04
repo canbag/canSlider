@@ -1,75 +1,65 @@
-$(document).ready(function (){
+var loadingCounter = 0;
+$(".slider img").fadeTo(0, 0);
+
+
+
+
+
+$(document).ready(function(){
+
+
+	start();
 	
-		
+});
+
+
+$('.slider img').each(function(){
+				$(this).attr('onload','imagesLoaded(this)');					
+});
+var imagesIndex = [];
+
+
+
+
+function start(){
+	listEnd = $('.slider img').size();
+	for(i=0;i<listEnd;i++){
+		imagesIndex[i] = true;
+	}
+	imagesLoadTest();
+}
+function imagesLoadTest(){
+	var imageLoadingLoop = setInterval(function(){
+		$.each(imagesIndex,function(i){
+			if(!imagesIndex[i]){
+				return;
+			}
+			$('title').html(i)
+			status = $('.slider img').get(i).complete;
+			if($('.slider img').get(i).complete){
+				loadingCounter = loadingCounter + 1;
+				imagesIndex[i] = false;
+			}
+			if(loadingCounter == $('.slider img').size()){
+				// alert("tüm resimler yüklendi");
+				$('.slider img').each(function(){
+					$(this).attr("width",($('.slider').width()/100*110));					
+				});
+				timeout = setInterval(bganimation,milisaniye);
+				bganimation();
+			}
+			
+		});
+	}, 100);
+}
+ 
+					
 
 					var timeout;
-					var effectTimeMS = 400;
-					var milisaniye = 2*1000;
-					var loadingCounter = 0;
-					$(".slider img").fadeTo(0, 0);
-					$('.slider img').load(function(){
-						loadingCounter = loadingCounter + 1;
-						if(loadingCounter == $('.slider img').size()){
-							$('.slider img').each(function(){
-								$(this).attr("width",($('.slider').width()/100*110));					
-							});
-							timeout = setInterval(bganimation,milisaniye);
-							bganimation();
-						}
-					});
+					var effectTimeMS = 100;
+					var milisaniye = 0.25*1000;
 					
 					
-					/*imagesLoaded( '.slider img', function() {
-						timeout = setInterval(bganimation,milisaniye);
-						bganimation();								
-					});*/
-					
-					
-					/*
-					$('.slider img').each(function() {
-						
-							while($(this).height() > 0){
-								
-							}
-							
-							loadingCounter = loadingCounter + 1;
-							alert("sonuncu"+loadingCounter);*/
-								
-								/*
-							if ($(this).height() > 0){
-								
-								alert("sonuncu"+loadingCounter);
-							}else {
-								$(this).load(function() {
-										//alert("ikincisi");
-								});
-							}
-							
-							if(loadingCounter == $('.slider img').size()){
-								alert("bitti");
-								$('.slider img').each(function(){
-									$(this).attr("width",($('.slider').width()/100*110));					
-								});
-								timeout = setInterval(bganimation,milisaniye);
-								bganimation();
-							}*/
-					/*});*/
-
-
-				/*	$('.slider img').load(function(){
-						loadingCounter = loadingCounter + 1;
-						
-					});
-					
-					*/
-					
-					
-			//		ss selam can
-			
-			
-			function imgPositioner(i){				
-				
-			}	
 
 			var artim = 0;
 			var yonelim = 1;
@@ -80,7 +70,7 @@ $(document).ready(function (){
 			function bganimation(){
 				clearInterval(timeout);
 				do {
-					ranimg = Math.floor((Math.random() * 2));
+					ranimg = Math.floor((Math.random() * $('.slider img').size()));
 				} while (ranimg == oldImg);
 				oldImg = ranimg;
 					
@@ -173,21 +163,7 @@ $(document).ready(function (){
 					
 					
 					
-					
-					
-					
-			
-	});
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+				
 
 
 
