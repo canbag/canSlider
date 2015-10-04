@@ -1,10 +1,3 @@
-
-$(document).ready(function(){
-	$(".canSlider").canSlider();
-});
-
-
-
 (function($) {
   "use strict";
  $.fn.canSlider = function(options) {
@@ -17,15 +10,14 @@ $(document).ready(function(){
 		
 		var options = $.extend({
             directions:['center-top','left-top','right-top','center-middle','center-top','center-bottom'],
-			effectTime:2000,
-			zaman:5,
+			time:1000,
+			effectTime:500,
 			imageLine:"order",
 			safeLoop:10,
             backgroundColor: "white"
         }, options );
 
-		options.milisaniye = options.milisaniye*1000; 
-
+	
 		
 		
 		
@@ -33,22 +25,17 @@ $(document).ready(function(){
 			var oldImg = 0;
 			var ranimg = 0;
 			var artim = 0;
-			var genFark,yukFark,i,tmpx,yuk1,yuk2,yukFarkReal,genFarkReal,nextDirection,yon,yonY,milisaniyeForCSS;
+			var genFark,yukFark,i,tmpx,yuk1,yuk2,yukFarkReal,genFarkReal,nextDirection,yon,yonY,timeForCSS;
 			
 			this.bganimation = function(){
 				
-
-				// $('title').html(artim%directions.length)
-				
-				
-				
 				// IMAGE LINE
 				if(options.imageLine == "order"){
-					ranimg =  Math.ceil(artim%$(parentim).size());
+					ranimg =  Math.ceil(artim%$(parentim).find("img").length);
 					oldImg = ranimg;					
 				}else{
 					do {
-						ranimg = Math.floor((Math.random() * $(parentim).size()));
+						ranimg = Math.floor((Math.random() * $(parentim).find("img").length));
 					} while (ranimg == oldImg);
 					oldImg = ranimg;
 				}
@@ -61,7 +48,7 @@ $(document).ready(function(){
 					yukFarkReal =Math.abs((yuk1-yuk2));
 				} while (yuk1 < 100 || yuk2 < 100 & tmpx < options.safeLoop);
 					
-				$('title').html(yuk2);
+				$('title').html(ranimg);
 				tmpx = 0;
 				do {
 					tmpx++;
@@ -69,8 +56,6 @@ $(document).ready(function(){
 					yuk2 = Math.abs($(parentim).width());
 					genFarkReal =Math.abs((yuk1-yuk2));
 				} while (yuk1 < 100 || yuk2 < 100 & tmpx < options.safeLoop);
-				
-				
 				
 				
 				
@@ -125,13 +110,13 @@ $(document).ready(function(){
 					yonY = "-"+Math.abs(Math.ceil(yukFark)).toString()+'px';
 
 					
-					milisaniyeForCSS = (options.milisaniye+0) +"ms";
+					timeForCSS = (options.time) +"ms";
 					
-					$(parentim).find("img").css('-webkit-transition','-webkit-transform '+milisaniyeForCSS+' linear');
-					$(parentim).find("img").css('-moz-transition','-moz-transform '+milisaniyeForCSS+' linear');
-					$(parentim).find("img").css('-ms-transition','-ms-transform '+milisaniyeForCSS+' linear');
-					$(parentim).find("img").css('-o-transition','-o-transform '+milisaniyeForCSS+' linear');
-					$(parentim).find("img").css('transition','transform '+milisaniyeForCSS+' linear');
+					$(parentim).find("img").css('-webkit-transition','-webkit-transform '+timeForCSS+' linear');
+					$(parentim).find("img").css('-moz-transition','-moz-transform '+timeForCSS+' linear');
+					$(parentim).find("img").css('-ms-transition','-ms-transform '+timeForCSS+' linear');
+					$(parentim).find("img").css('-o-transition','-o-transform '+timeForCSS+' linear');
+					$(parentim).find("img").css('transition','transform '+timeForCSS+' linear');
 	
 					
 					$(parentim).find("img").css('-webkit-transform','translate('+yon+','+yonY+')');
@@ -147,7 +132,11 @@ $(document).ready(function(){
 					artim++;
 				}
 				
-				
+	this.starter = function(){
+		var canSliderLoop = setInterval(function(){
+					parentim.bganimation();
+		}, options.time-options.effectTime);
+	}	
 				
 				
 	parentim.css('width','100%').css('height','420px').css('overflow','hidden').css('position','relative');
@@ -155,12 +144,12 @@ $(document).ready(function(){
 				
 	
 	$(parentim).find("img").fadeTo(0, 0);
+	$(parentim).find("img").eq(0).fadeTo(0, 1);
 	listEnd = $(parentim).find("img").length;
-	// $('title').html(listEnd);
+	
 	for(i=0;i<listEnd;i++){
 		imagesIndex[i] = true;
 	}
-	// $('title').html(imagesIndex);
 	
 	var imageLoadingLoop = setInterval(function(){
 		$.each(imagesIndex,function(i){
@@ -177,11 +166,13 @@ $(document).ready(function(){
 		});
 		if(loadingCounter == $(parentim).find('img').size()){
 				// alert("tüm resimler yüklendi");
-				/*$(parentim).each(function(){
+				$(parentim).find("img").each(function(){
 					$(this).attr("width",($(this).width()/100*110));					
-				});*/
-				// $.fn.canSlider.bganimation();
-				parentim.bganimation();
+				});
+				
+				clearInterval(imageLoadingLoop);
+				parentim.starter();
+				
 		}
 	}, 100);
 				
