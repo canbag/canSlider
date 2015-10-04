@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>canSlider</title>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="../jquery.canslider.js"></script>
+	
+	<script>
+		$(document).ready(function(){
+			$(".canSlider").canSlider({
+					directions:['right-bottom','left-top'],
+					time:1000,
+					effectTime:200,
+					imageLine:"order",
+					safeLoop:10,
+					backgroundColor: "white"
+			});
+		});
+	</script>
+</head>
+
+<body>
+
+
+
+	<div class="canSlider">
+		<img src="images/image1.jpg">
+		<img src="images/image2.jpg">
+		<img src="images/image3.jpg">
+		<img src="images/image4.jpg">
+		<img src="images/image5.jpg">
+		<img src="images/image6.jpg">
+	</div>
+
+
+<div id="log">
+</div>
+</body>
+</html>
